@@ -34,7 +34,7 @@ def find_city(city):
 def get_info(search):
     try:
         inf = wikipedia.page(wikipedia.search(search + " (город)")[0])
-        return inf.summary + "\n" + inf.url
+        return inf.summary + "\n" + inf.url if "город" in inf.summary else None
     except:
         pass
 
@@ -84,7 +84,7 @@ while True:
                 add = add_new_city(current_city.replace("добавить ", ""))
                 if add:
                     if add.lower() in cities:
-                        vk.method('messages.send' ,{'user_id': current_user_id , 'message': "Этот город уже есть в списке"})
+                        vk.method('messages.send' ,{'user_id': current_user_id , 'message': "Город {} уже есть в списке".format(add)})
                         continue
                     file = open("cities.txt", "a")
                     file.write("\n" + add)
