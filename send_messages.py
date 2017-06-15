@@ -2,7 +2,7 @@ import vk_api
 import random
 import wikipedia
 import requests
-
+import re
 
 cities = open("cities.txt").read().lower().split("\n")
 used_cities = {}
@@ -63,6 +63,7 @@ while True:
             values['last_message_id'] = response['items'][0]['id']
             current_user_id = response["items"][0]["user_id"]
             current_city = response["items"][0]["body"].lower()
+            current_city = re.sub(r'-\d+', "", current_city)
             if current_city == "":
                 vk.method('messages.send', {'user_id': current_user_id, 'message': "Пришли название города"})
             if current_city == "сдаюсь":
@@ -82,6 +83,7 @@ while True:
                 continue
             if "добавить" in current_city:
                 add = add_new_city(current_city.replace("добавить ", ""))
+                add = re.sub(r'-\d+', "", add)
                 if add:
                     if add.lower() in cities:
                         vk.method('messages.send' ,{'user_id': current_user_id , 'message': "Город {} уже есть в списке".format(add)})
