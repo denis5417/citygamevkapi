@@ -83,10 +83,15 @@ while True:
                 continue
             if "добавить" in current_city:
                 add = add_new_city(current_city.replace("добавить ", ""))
-                add = re.sub(r'-\d+', "", add)
+                if current_city.replace("добавить", "") == "":
+                    vk.method('messages.send', {'user_id': current_user_id, 'message': "Некорректная команда или такой город не найден"})
+                try:
+                    add = re.sub(r'-\d+', "", add)
+                except:
+                    pass
                 if add:
                     if add.lower() in cities:
-                        vk.method('messages.send' ,{'user_id': current_user_id , 'message': "Город {} уже есть в списке".format(add)})
+                        vk.method('messages.send', {'user_id': current_user_id , 'message': "Город {} уже есть в списке".format(add)})
                         continue
                     file = open("cities.txt", "a")
                     file.write("\n" + add)
