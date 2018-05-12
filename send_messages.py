@@ -3,6 +3,7 @@ import random
 import wikipedia
 import requests
 import re
+import os
 
 cities = open("cities.txt").read().lower().split("\n")
 used_cities = {}
