@@ -1,1 +1,1 @@
-bot: python3 citygamevkapi.py
+bot: python3 send_messages.py
