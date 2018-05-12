@@ -54,7 +54,7 @@ def add_new_city(city):
 access_token = os.environ['TOKEN']
 values = {'out': 0, 'count': 100, 'time_offset': 60}
 vk = vk_api.VkApi(token=access_token)
-vk.auth()
+vk.auth(token_only=true)
 
 while True:
     current_user_id = ""
