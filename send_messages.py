@@ -4,6 +4,7 @@ import wikipedia
 import requests
 import re
 import os
+from vk_api.longpoll import VkLongPoll, VkEventType
 
 cities = open("cities.txt").read().lower().split("\n")
 used_cities = {}
@@ -51,18 +52,22 @@ def add_new_city(city):
         pass
 
 
-access_token = os.environ['TOKEN']
+access_token = 'TOKEN'
 values = {'out': 0, 'count': 100, 'time_offset': 60}
 vk = vk_api.VkApi(token=access_token)
+longpoll = VkLongPoll(vk)
 
-while True:
+for event in longpoll.listen():
+    if not (event.type == VkEventType.MESSAGE_NEW and event.to_me):
+        continue
     current_user_id = ""
     try:
-        response = vk.method('messages.get', values)
-        if response["items"]:
-            values['last_message_id'] = response['items'][0]['id']
-            current_user_id = response["items"][0]["user_id"]
-            current_city = response["items"][0]["body"].lower()
+        #response = vk.method('messages.get', values)
+        #print(response)
+        if True:
+            #values['last_message_id'] = response['items'][0]['id']
+            current_user_id = event.user_id
+            current_city = event.text.lower()
             current_city = re.sub(r'-\d+', "", current_city)
             if current_city == "":
                 vk.method('messages.send', {'user_id': current_user_id, 'message': "Пришли название города"})
@@ -82,25 +87,26 @@ while True:
                     vk.method('messages.send' , {'user_id': current_user_id , 'message': "Такого города нет в списке"})
                 continue
             if "добавить" in current_city:
-                add = add_new_city(current_city.replace("добавить ", ""))
-                if current_city.replace("добавить", "") == "":
-                    vk.method('messages.send', {'user_id': current_user_id, 'message': "Некорректная команда или такой город не найден"})
-                try:
-                    add = re.sub(r'-\d+', "", add)
-                except:
-                    pass
-                if add:
-                    if add.lower() in cities:
-                        vk.method('messages.send', {'user_id': current_user_id , 'message': "Город {} уже есть в списке".format(add)})
-                        continue
-                    file = open("cities.txt", "a")
-                    file.write("\n" + add)
-                    file.close()
-                    cities.append(add.lower())
-                    vk.method('messages.send' , {'user_id': current_user_id , 'message': "Город {} добавлен в список городов".format(add)})
-                else:
-                    vk.method('messages.send' , {'user_id': current_user_id ,'message': "Некорректная команда или такой город не найден"})
-                continue
+                vk.method('messages.send' , {'user_id': current_user_id ,'message': "Google MAPS API теперь платное"})
+                #add = add_new_city(current_city.replace("добавить ", ""))
+                #if current_city.replace("добавить", "") == "":
+                #    vk.method('messages.send', {'user_id': current_user_id, 'message': "Некорректная команда или такой город не найден"})
+                #try:
+                #    add = re.sub(r'-\d+', "", add)
+                #except:
+                #    pass
+                #if add:
+                #    if add.lower() in cities:
+                #        vk.method('messages.send', {'user_id': current_user_id , 'message': "Город {} уже есть в списке".format(add)})
+                #        continue
+                #    file = open("cities.txt", "a")
+                #    file.write("\n" + add)
+                #    file.close()
+                #    cities.append(add.lower())
+                #    vk.method('messages.send' , {'user_id': current_user_id , 'message': "Город {} добавлен в список городов".format(add)})
+                #else:
+                #    vk.method('messages.send' , {'user_id': current_user_id ,'message': "Некорректная команда или такой город не найден"})
+                #continue
             check = check_city(current_city)
             if current_city[-1] == "ь" or current_city[-1] == "ъ" or current_city[-1] == "ы":
                 current_city1 = current_city[0:-1]
